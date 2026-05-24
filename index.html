@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f4f7f6;
+      padding: 20px;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .portal-container {
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .form-label {
+      font-weight: 500;
+      color: #333;
+    }
+    .toggle-section {
+      transition: all 0.3s ease;
+    }
+    .company-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    .company-logo {
+      max-width: 180px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+    .company-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #0056b3;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="portal-container mt-3 mb-5">
+    
+    <!-- Company Header & Logo -->
+    <div class="company-header">
+      
+      <!-- Your official Nuerepa Nepal Logo from Google Drive -->
+      <img src="https://drive.google.com/thumbnail?id=12BfxdCObiQWC0nyoU_rM0GtSfu4GPlv5&sz=w500" alt="Nuerepa" class="company-logo" id="logoImage">
+      
+      <div class="company-name">Nuerepa Nepal</div>
+      <h4 class="text-secondary mt-2" id="formTitle">Admission & Renewal Portal</h4>
+    </div>
+    
+    <form id="admissionForm" onsubmit="submitForm(event)">
+      
+      <!-- Action Type Selector -->
+      <div class="row mb-4 p-3 bg-light rounded border">
+        <div class="col-12">
+          <label for="actionType" class="form-label text-primary fw-bold">Select Action</label>
+          <select class="form-select border-primary" id="actionType" onchange="toggleFormMode()" required>
+            <option value="Register">Register New Customer</option>
+            <option value="Renew">Renew Existing Customer</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ID Section (Hidden during Registration, Visible during Renewal) -->
+      <div class="row mb-3" id="section-id" style="display:none;">
+        <div class="col-12">
+          <label for="id" class="form-label text-danger fw-bold">Customer ID to Renew</label>
+          <input type="text" class="form-control border-danger" id="id" placeholder="e.g. VGN-1001">
+        </div>
+      </div>
+
+      <!-- Row 1: Category -->
+      <div class="row mb-3 toggle-section" id="section-category">
+        <div class="col-12">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-select register-req" id="category" required>
+            <option value="" disabled selected>Select a Category...</option>
+            <option value="Normal (Rs.1000) per month">Normal (Rs.1000) per month</option>
+            <option value="Deluxe (Rs.3000) per month">Deluxe (Rs.3000) per month</option>
+            <option value="Premium (Rs.5000) per month">Premium (Rs.5000) per month</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Row 2: Customer Details -->
+      <div class="row mb-3 toggle-section" id="section-customer">
+        <div class="col-md-6">
+          <label for="customerName" class="form-label">Customer Name</label>
+          <input type="text" class="form-control register-req" id="customerName" required>
+        </div>
+        <div class="col-md-6">
+          <label for="address" class="form-label">Address</label>
+          <input type="text" class="form-control register-req" id="address" required>
+        </div>
+      </div>
+
+      <!-- Row 3: Contact & Admission Date -->
+      <div class="row mb-3">
+        <div class="col-md-6 toggle-section" id="section-contact">
+          <label for="contactNo" class="form-label">Contact No</label>
+          <input type="tel" class="form-control register-req" id="contactNo" required>
+        </div>
+        <div class="col-md-6">
+          <label for="admissionDate" class="form-label" id="dateLabel">Date of Admission (A.D)</label>
+          <input type="date" class="form-control" id="admissionDate" required>
+        </div>
+      </div>
+
+      <!-- Row 4: Problems -->
+      <div class="mb-3 toggle-section" id="section-problems">
+        <label for="problems" class="form-label">Problems</label>
+        <textarea class="form-control register-req" id="problems" rows="3" required></textarea>
+      </div>
+
+      <!-- Row 5: Guardian Details -->
+      <div class="row mb-3 toggle-section" id="section-guardian">
+        <div class="col-md-6">
+          <label for="guardianName" class="form-label">Guardian's Name</label>
+          <input type="text" class="form-control" id="guardianName">
+        </div>
+        <div class="col-md-6">
+          <label for="guardianContact" class="form-label">Guardian's Contact No</label>
+          <input type="tel" class="form-control" id="guardianContact">
+        </div>
+      </div>
+
+      <!-- Row 6: Referral -->
+      <div class="row mb-4 toggle-section" id="section-refer">
+        <div class="col-12">
+          <label for="referBy" class="form-label">Refer By</label>
+          <input type="text" class="form-control" id="referBy">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fs-5" id="submitBtn">Submit Registration</button>
+      
+      <!-- Status Messages -->
+      <div id="successMsg" class="alert alert-success mt-3 text-center fw-bold" style="display:none;"></div>
+      <div id="errorMsg" class="alert alert-danger mt-3 text-center fw-bold" style="display:none;"></div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', toggleFormMode);
+
+    function toggleFormMode() {
+      const mode = document.getElementById('actionType').value;
+      const elementsToToggle = [
+        'section-category', 'section-customer', 'section-contact', 
+        'section-problems', 'section-guardian', 'section-refer'
+      ];
+      
+      const reqInputs = document.querySelectorAll('.register-req');
+      const submitBtn = document.getElementById('submitBtn');
+      const dateLabel = document.getElementById('dateLabel');
+      
+      const idSection = document.getElementById('section-id');
+      const idInput = document.getElementById('id');
+
+      if (mode === 'Renew') {
+        // Hide registration fields
+        elementsToToggle.forEach(id => document.getElementById(id).style.display = 'none');
+        reqInputs.forEach(input => input.removeAttribute('required'));
+        
+        // Show ID field for renewal
+        idSection.style.display = 'block';
+        idInput.setAttribute('required', 'true');
+        idInput.value = "";
+
+        submitBtn.innerText = 'Submit Renewal';
+        submitBtn.classList.replace('btn-primary', 'btn-success');
+        dateLabel.innerText = 'Date of Renewal (A.D)';
+      } else {
+        // Show registration fields
+        elementsToToggle.forEach(id => document.getElementById(id).style.display = 'flex');
+        document.getElementById('section-problems').style.display = 'block';
+        reqInputs.forEach(input => input.setAttribute('required', 'true'));
+        
+        // Hide ID field completely during registration
+        idSection.style.display = 'none';
+        idInput.removeAttribute('required');
+        idInput.value = "";
+
+        submitBtn.innerText = 'Submit Registration';
+        submitBtn.classList.replace('btn-success', 'btn-primary');
+        dateLabel.innerText = 'Date of Admission (A.D)';
+      }
+    }
+
+    function submitForm(event) {
+      event.preventDefault(); 
+      
+      const btn = document.getElementById('submitBtn');
+      const mode = document.getElementById('actionType').value;
+      
+      btn.disabled = true;
+      btn.innerText = 'Processing...';
+      
+      document.getElementById('successMsg').style.display = 'none';
+      document.getElementById('errorMsg').style.display = 'none';
+
+      const formData = {
+        actionType: mode,
+        id: document.getElementById('id').value,
+        category: document.getElementById('category').value,
+        customerName: document.getElementById('customerName').value,
+        address: document.getElementById('address').value,
+        contactNo: document.getElementById('contactNo').value,
+        admissionDate: document.getElementById('admissionDate').value,
+        problems: document.getElementById('problems').value,
+        guardianName: document.getElementById('guardianName').value,
+        guardianContact: document.getElementById('guardianContact').value,
+        referBy: document.getElementById('referBy').value
+      };
+
+      google.script.run
+        .withSuccessHandler(function(response) {
+          if(response.includes("Successful")) {
+            const successDiv = document.getElementById('successMsg');
+            successDiv.style.display = 'block';
+            successDiv.innerText = response;
+            document.getElementById('admissionForm').reset();
+            toggleFormMode(); 
+          } else {
+            const errorDiv = document.getElementById('errorMsg');
+            errorDiv.style.display = 'block';
+            errorDiv.innerText = response;
+          }
+          btn.disabled = false;
+          btn.innerText = mode === 'Renew' ? 'Submit Renewal' : 'Submit Registration';
+        })
+        .withFailureHandler(function(error) {
+          const errorDiv = document.getElementById('errorMsg');
+          errorDiv.style.display = 'block';
+          errorDiv.innerText = "Network Error: " + error.message;
+          btn.disabled = false;
+          btn.innerText = mode === 'Renew' ? 'Submit Renewal' : 'Submit Registration';
+        })
+        .processRecord(formData);
+    }
+  </script>
+</body>
+</html>
